@@ -28,7 +28,7 @@
 
 #### 动态管理
 
-- [获取动态内容](docs/update/get-updates.md)
+- [获取动态](docs/update/get-updates.md)
 
 - [获取动态分页](docs/update/page-updates.md)
 

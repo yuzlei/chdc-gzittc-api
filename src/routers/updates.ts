@@ -1,31 +1,39 @@
 import {Model as ViewModel, UpdateView} from "../models/update-view";
 import {Model as ContentModel, UpdateContent} from "../models/update-content";
-import {getResources, uploadResources, getFilter} from "../utils";
+import {uploadResources, getFilter} from "../utils";
 import Router from 'koa-router'
 import type {ctx} from "../types"
 import type {ParsedUrlQuery} from 'querystring'
 import type {PipelineStage} from "mongoose"
+import {ObjectId} from "mongodb";
 
 const router: Router = new Router()
 const path: string = "/updates"
 
 type sort = 'ascending' | 'descending'
 
-getResources(router, `${path}/contents`, ContentModel)
 uploadResources(router, path, `images/head`)
 
-const inKey = (object: Record<string, any>, inObject: Record<string, any>, prefix: string = ""): Record<string, any> => {
-    let obj: Record<string, any> = {}
-    for (const key in object) {
-        if (inObject.hasOwnProperty(key)) obj[`${prefix}${key}`] = object[key]
+const inKey = (object: Record<string, any>, inObject: Record<string, any>, prefix: string = "", mode: "arr" | "obj" = "obj"): Record<string, any> | Array<Record<string, any>> => {
+    if(mode === "obj") {
+        let obj: Record<string, any> = {}
+        for (const key in object) {
+            if (inObject.hasOwnProperty(key)) obj[`${prefix}${key}`] = object[key]
+        }
+        return obj
+    }else {
+        let arr: Array<Record<string, any>> = []
+        for (const key in object) {
+            if (inObject.hasOwnProperty(key)) arr.push({[`${prefix}${key}`]: object[key]})
+        }
+        return arr
     }
-    return obj
 }
 
-const FillingAnObject = (object: Record<string, any>, prefix: string = "") => {
+const FillingAnObject = (object: Record<string, any>, prefix: string | null = null) => {
     let obj: Record<string, any> = {}
     for (const key in object) {
-        obj[key] = `${prefix}${key}`
+        obj[key] = prefix ? `${prefix}${key}` : 1
     }
     return obj
 }
@@ -43,49 +51,46 @@ router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
             limit: number,
             page: number,
         }
-
         const sort: sort = query.sort
         const sortName: string = query.sortName
         const limit: number = query.limit || 10
         const page: number = query.page || 1
-
         const as: string = 'update_views'
-
-        const viewMatch: Record<string, any> = inKey(getFilter(query, ctx), new UpdateView(), `${as}.`)
-        const contentMatch: Record<string, any> = inKey(getFilter(query, ctx), new UpdateContent())
-        const viewResult: Record<string, any> = FillingAnObject(new UpdateView(), `$${as}.`)
-
         const pipeline: Array<PipelineStage> = [
             {
-                $lookup: {
-                    from: as,
-                    localField: 'viewId',
-                    foreignField: '_id',
-                    as
-                }
-            },
-            {
+                $lookup: {from: as, localField: 'viewId', foreignField: '_id', as}
+            }, {
                 $unwind: `$${as}`
             }, {
-                $match: {...viewMatch, ...contentMatch}
+                $match: {$or: [...inKey(getFilter(query, ctx), {...new UpdateView(), _id: ""}, `${as}.`, "arr") as Array<Record<string, any>>, ...inKey(getFilter(query, ctx), new UpdateContent(), "", "arr") as Array<Record<string, any>>]}
             }
         ]
+        if (sortName && sort) pipeline.push({$sort: {[sortName]: sort === 'ascending' ? 1 : -1}})
+        pipeline.push({$project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`)}})
+        const result: Array<any> = await ContentModel.aggregate(pipeline)
+        const arr: Array<any> = []
+        for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit + 1))
+        ctx.body = {data: arr[page - 1], pageTotal: arr.length}
+    } catch (e) {
+        ctx.throw(400, '查找数据失败');
+    }
+});
 
-        if (sortName && sort) {
-            pipeline.push({
-                $sort: {
-                    [sortName]: sort === 'ascending' ? 1 : -1
-                }
-            })
-        }
-
-        pipeline.push({
-            $project: {_id: 1, createdAt: 1, updatedAt: 1, ...viewResult}
-        }, {
-            $skip: (page - 1) * limit
-        }, {
-            $limit: limit
-        })
+router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
+    try {
+        const query: ParsedUrlQuery = ctx.query as ParsedUrlQuery
+        const as: string = 'update_views'
+        const pipeline: Array<PipelineStage> = [
+            {
+                $lookup: {from: as, localField: 'viewId', foreignField: '_id', as}
+            }, {
+                $unwind: `$${as}`
+            }, {
+                $match: {...inKey(getFilter(query, ctx), {...new UpdateView(), _id: ""}, `${as}.`), ...inKey(getFilter(query, ctx), new UpdateContent())}
+            }, {
+                $project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`), ...FillingAnObject(new UpdateContent())}
+            }
+        ]
         ctx.body = await ContentModel.aggregate(pipeline)
     } catch (e) {
         ctx.throw(400, '查找数据失败');
@@ -94,7 +99,7 @@ router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
 
 router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
     try {
-        const ids: Array<string> | undefined = (ctx.request.body as { ids: Array<string> } | undefined)?.ids
+        const ids: Array<ObjectId> | undefined = (ctx.query as { ids: string } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
         if (Array.isArray(ids) && ids.length > 0) {
             await ContentModel.deleteMany({viewId: {$in: ids}})
             await ViewModel.deleteMany({_id: {$in: ids}})
@@ -130,7 +135,6 @@ router.put(`${path}/:id`, async (ctx: ctx): Promise<void> => {
         if (data) {
             const viewMatch: Record<string, any> = inKey(data, new UpdateView())
             const contentMatch: Record<string, any> = inKey(data, new UpdateContent())
-
             contentMatch.toString() !== "{}" ? await ContentModel.updateOne({viewId: id}, {$set: contentMatch}) : null
             viewMatch.toString() !== "{}" ? await ViewModel.updateOne({_id: id}, {$set: viewMatch}) : null
             ctx.status = 200;

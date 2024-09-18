@@ -5,6 +5,7 @@ import type {File} from "formidable"
 import type {model, ctx} from "../types";
 import type {RootFilterQuery} from "mongoose"
 import type {ReadStream} from "fs"
+import {ObjectId} from "mongodb";
 
 const getFileExtension = (str: string): string | undefined => str.match(/\/.+(\.[^\/]+)\/?/)?.[1]
 
@@ -23,6 +24,7 @@ const getFilter = (params: any, ctx: ctx): RootFilterQuery<any> => {
         } else {
             query[key] = value;
         }
+        if(key === "_id") query[key] = new ObjectId(value)
     }
     return query
 }
@@ -40,7 +42,7 @@ const getResources = (router: Router, path: string, model: model): void => {
 const deleteResources = (router: Router, path: string, model: model): void => {
     router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
         try {
-            const ids: Array<string> | undefined = (ctx.request.body as { ids: Array<string> } | undefined)?.ids
+            const ids: Array<ObjectId> | undefined = (ctx.query as { ids: string } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
             if (Array.isArray(ids) && ids.length > 0) {
                 await model.deleteMany({_id: {$in: ids}});
                 ctx.status = 200;

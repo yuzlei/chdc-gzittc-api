@@ -10,8 +10,8 @@ mongoose.connect(dbUrl).then(() => console.log("数据库连接成功")).catch(e
 
 const app: Koa = new Koa();
 
-app.use(koaBody({multipart: true}))
 app.use(cors({origin: '*'}))
+app.use(koaBody({multipart: true}))
 app.use(staticFiles("public"))
 app.use(router.routes())
 
