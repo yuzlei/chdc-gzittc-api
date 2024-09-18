@@ -1,17 +1,11 @@
 import type {model} from "../types"
 import {prop, modelOptions, getModelForClass} from "@typegoose/typegoose";
 
-enum MemberStatus {
-    "站长",
-    "社长",
-    "成员"
-}
-
 @modelOptions({
     schemaOptions: {
         timestamps: true,
         strict: true,
-    }
+    },
 })
 
 class Members {
@@ -32,10 +26,9 @@ class Members {
     @prop({
         required: true,
         type: [String],
-        enum: Object.values(MemberStatus),
         trim: true,
     })
-    status!: Array<MemberStatus>
+    status!: Array<string>
 }
 
 const Model: model = getModelForClass(Members);

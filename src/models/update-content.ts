@@ -1,26 +1,28 @@
-import {UpdateView} from "./update-view"
 import {prop, modelOptions, getModelForClass} from "@typegoose/typegoose";
 import type {model} from "../types";
 import type {ObjectId} from "mongodb";
+
 
 @modelOptions({
     schemaOptions: {
         timestamps: true,
         strict: true,
+    },
+    options: {
+        customName: 'update_contents'
     }
 })
 
 class UpdateContent {
     @prop({
-        required: true,
+        required: false,
         type: String,
         trim: true,
+        default: "",
     })
     content!: string;
 
-    @prop({
-        ref: UpdateView
-    })
+    @prop({ref: "update_views"})
     viewId!: ObjectId;
 }
 

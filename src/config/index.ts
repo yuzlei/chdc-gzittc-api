@@ -4,7 +4,7 @@ const port: number = 3000
 
 const apiUrl: string = process.env.VITE_API_URL || `http://localhost:${port}`;
 
-const dbUrl: string = process.env.DB_URL || 'mongodb://localhost:27017';
+const dbUrl: string = process.env.DB_URL || 'mongodb://localhost:27017/chdc-gzittc';
 
 const routerPrefix: string = '/api/v1'
 
