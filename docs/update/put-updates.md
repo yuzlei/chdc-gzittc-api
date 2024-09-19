@@ -11,7 +11,7 @@
 #### 请求说明
 
 - 请求方式：`PUT`
-- 请求地址：`http://localhost:3000/api/v1/members/:id`
+- 请求地址：`http://localhost:3000/api/v1/updates/:id`
 
 #### 请求头
 

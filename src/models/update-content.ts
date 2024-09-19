@@ -22,6 +22,14 @@ class UpdateContent {
     })
     content!: string;
 
+    @prop({
+        required: false,
+        type: String,
+        trim: true,
+        default: "",
+    })
+    content_text!: string;
+
     @prop({ref: "update_views"})
     viewId!: ObjectId;
 }

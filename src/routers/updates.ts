@@ -12,7 +12,7 @@ const path: string = "/updates"
 
 type sort = 'ascending' | 'descending'
 
-uploadResources(router, path, `images/head`)
+uploadResources(router, path, `images/update`)
 
 const inKey = (object: Record<string, any>, inObject: Record<string, any>, prefix: string = "", mode: "arr" | "obj" = "obj"): Record<string, any> | Array<Record<string, any>> => {
     if(mode === "obj") {
