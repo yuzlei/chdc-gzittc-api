@@ -39,6 +39,22 @@ const FillingAnObject = (object: Record<string, any>, prefix: string | null = nu
 }
 
 router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
+    const query: ParsedUrlQuery & {
+        limit: number,
+        page: number,
+    } = ctx.query as ParsedUrlQuery & {
+        limit: number,
+        page: number,
+    }
+    const limit: number = query.limit || 10
+    const page: number = query.page || 1
+    const arr = []
+    const result = await ViewModel.find({});
+    for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
+    ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
+})
+
+router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
     try {
         const query: ParsedUrlQuery & {
             sort: sort,
@@ -69,8 +85,8 @@ router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
         pipeline.push({$project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`)}})
         const result: Array<any> = await ContentModel.aggregate(pipeline)
         const arr: Array<any> = []
-        for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit + 1))
-        ctx.body = {data: arr[page - 1], pageTotal: arr.length}
+        for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
+        ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
     } catch (e) {
         ctx.throw(400, '查找数据失败');
     }
@@ -91,7 +107,8 @@ router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
                 $project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`), ...FillingAnObject(new UpdateContent())}
             }
         ]
-        ctx.body = await ContentModel.aggregate(pipeline)
+        const res = await ContentModel.aggregate(pipeline)
+        ctx.body = res ? res : []
     } catch (e) {
         ctx.throw(400, '查找数据失败');
     }

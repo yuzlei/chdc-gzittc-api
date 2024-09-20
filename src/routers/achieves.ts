@@ -4,7 +4,7 @@ import {Model} from "../models/achieves";
 
 const router: Router = new Router()
 
-const path: string = "/achieve"
+const path: string = "/achieves"
 
 updateResources(router, path, Model)
 uploadResources(router, path, `images/achieve`)

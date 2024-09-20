@@ -30,7 +30,9 @@
 
 - [获取动态](docs/update/get-updates.md)
 
-- [获取动态分页](docs/update/page-updates.md)
+- [获取动态分页](docs/update/pages-updates)
+
+- [获取动态条件分页](docs/update/pages_condition-updates)
 
 - [添加动态](docs/update/post-updates.md)
 

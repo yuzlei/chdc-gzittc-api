@@ -4,7 +4,7 @@ import Router from 'koa-router'
 
 const router: Router = new Router()
 
-const path: string = "/member"
+const path: string = "/members"
 
 updateResources(router, path, Model)
 uploadResources(router, path, `images/head`)

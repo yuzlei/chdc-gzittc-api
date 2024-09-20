@@ -32,7 +32,8 @@ const getFilter = (params: any, ctx: ctx): RootFilterQuery<any> => {
 const getResources = (router: Router, path: string, model: model): void => {
     router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
         try {
-            ctx.body = await model.find(getFilter(ctx.query, ctx));
+            const res = await model.find(getFilter(ctx.query, ctx))
+            ctx.body = res ? res : [];
         } catch (e) {
             ctx.throw(400, '查找数据失败');
         }
