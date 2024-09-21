@@ -14,9 +14,7 @@ uploadResources(router, path, `images/update`)
 
 const FillingAnObject = (object: Record<string, any>, prefix: string | null = null) => {
     let obj: Record<string, any> = {}
-    for (const key in object) {
-        obj[key] = prefix ? `${prefix}${key}` : 1
-    }
+    for (const key in object) obj[key] = prefix ? `${prefix}${key}` : 1
     return obj
 }
 
@@ -64,11 +62,25 @@ router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
             }, {
                 $unwind: `$${as}`
             }, {
-                $match: {$or: [...inKey(getFilter(query, ctx), {...new UpdateView(), _id: ""}, `${as}.`, "arr") as Array<Record<string, any>>, ...inKey(getFilter(query, ctx), new UpdateContent(), "", "arr") as Array<Record<string, any>>]}
+                $match: {
+                    $or: [...inKey(getFilter(query, ctx), {
+                        ...new UpdateView(),
+                        _id: ""
+                    }, `${as}.`, "arr") as Array<Record<string, any>>, ...inKey(getFilter(query, ctx), new UpdateContent(), "", "arr") as Array<Record<string, any>>]
+                }
             }
         ]
         if (sortName && sort) pipeline.push({$sort: {[sortName]: sort === 'ascending' ? 1 : -1}})
-        pipeline.push({$project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`)}})
+        pipeline.push({
+            $project: {
+                ...FillingAnObject({
+                    ...new UpdateView(),
+                    _id: 1,
+                    createdAt: 1,
+                    updatedAt: 1
+                }, `$${as}.`)
+            }
+        })
         const result: Array<any> = await ContentModel.aggregate(pipeline)
         const arr: Array<any> = []
         for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
@@ -88,9 +100,21 @@ router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
             }, {
                 $unwind: `$${as}`
             }, {
-                $match: {...inKey(getFilter(query, ctx), {...new UpdateView(), _id: ""}, `${as}.`), ...inKey(getFilter(query, ctx), new UpdateContent())}
+                $match: {
+                    ...inKey(getFilter(query, ctx), {
+                        ...new UpdateView(),
+                        _id: ""
+                    }, `${as}.`), ...inKey(getFilter(query, ctx), new UpdateContent())
+                }
             }, {
-                $project: {...FillingAnObject({...new UpdateView(), _id: 1, createdAt: 1, updatedAt: 1}, `$${as}.`), ...FillingAnObject(new UpdateContent())}
+                $project: {
+                    ...FillingAnObject({
+                        ...new UpdateView(),
+                        _id: 1,
+                        createdAt: 1,
+                        updatedAt: 1
+                    }, `$${as}.`), ...FillingAnObject(new UpdateContent())
+                }
             }
         ]
         const res = await ContentModel.aggregate(pipeline)
@@ -102,7 +126,9 @@ router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
 
 router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
     try {
-        const ids: Array<ObjectId> | undefined = (ctx.query as { ids: string } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
+        const ids: Array<ObjectId> | undefined = (ctx.query as {
+            ids: string
+        } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
         if (Array.isArray(ids) && ids.length > 0) {
             await ContentModel.deleteMany({viewId: {$in: ids}})
             await ViewModel.deleteMany({_id: {$in: ids}})

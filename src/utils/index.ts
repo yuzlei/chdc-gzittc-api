@@ -140,8 +140,7 @@ const uploadResources = (router: Router, path: string, saveDirectory: string): v
                 const name: string = `${file.newFilename}${getFileExtension(typeof file.originalFilename === "string" ? file.originalFilename : "")}`
                 reader.pipe(fs.createWriteStream(`${publicPath}/${saveDirectory}/${name}`));
                 ctx.status = 200;
-                console.log(`${apiUrl}/${saveDirectory}/${name}`)
-                ctx.body = {imgSrc: `${apiUrl}/${saveDirectory}/${name}`}
+                ctx.body = {imgSrc: `/${saveDirectory}/${name}`}
             } else {
                 ctx.throw(400, '文件上传失败');
             }
