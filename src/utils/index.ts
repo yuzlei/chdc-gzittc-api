@@ -1,5 +1,5 @@
 import {ObjectId} from "mongodb";
-import {apiUrl, publicPath} from "../config";
+import {apiUrl, publicPath, routerPrefix} from "../config";
 import fs from "fs"
 import Router from "koa-router"
 import type {sort} from "../types";
@@ -140,7 +140,7 @@ const uploadResources = (router: Router, path: string, saveDirectory: string): v
                 const name: string = `${file.newFilename}${getFileExtension(typeof file.originalFilename === "string" ? file.originalFilename : "")}`
                 reader.pipe(fs.createWriteStream(`${publicPath}/${saveDirectory}/${name}`));
                 ctx.status = 200;
-                ctx.body = {imgSrc: `/${saveDirectory}/${name}`}
+                ctx.body = {imgSrc: `${apiUrl}${routerPrefix}/${saveDirectory}/${name}`}
             } else {
                 ctx.throw(400, '文件上传失败');
             }
