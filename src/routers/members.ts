@@ -1,5 +1,5 @@
-import {Model} from "../models/members"
-import {createResources, deleteResources, getResources, updateResources, uploadResources} from "../utils"
+import {Model, Members} from "../models/members"
+import {createResources, deleteResources, getPage, getResources, updateResources, uploadResources} from "../utils"
 import Router from 'koa-router'
 
 const router: Router = new Router()
@@ -11,5 +11,6 @@ uploadResources(router, path, `images/head`)
 deleteResources(router, path, Model)
 getResources(router, path, Model)
 createResources(router, path, Model)
+getPage(router, path, Model, Members)
 
 export default router

@@ -6,6 +6,8 @@
 
 - [获取成员](docs/member/get-members.md)
 
+- [获取成员条件分页](docs/member/pages_condition-members.md)
+
 - [添加成员](docs/member/post-members.md)
 
 - [删除成员](docs/member/delete-members.md)
@@ -17,6 +19,8 @@
 #### 成就管理
 
 - [获取成就](docs/achieve/get-achieves.md)
+
+- [获取成就条件分页](docs/achieve/pages_condition-achieves.md)
 
 - [添加成就](docs/achieve/post-achieves.md)
 
@@ -30,9 +34,9 @@
 
 - [获取动态](docs/update/get-updates.md)
 
-- [获取动态分页](docs/update/pages-updates)
+- [获取动态分页](docs/update/pages-updates.md)
 
-- [获取动态条件分页](docs/update/pages_condition-updates)
+- [获取动态条件分页](docs/update/pages_condition-updates.md)
 
 - [添加动态](docs/update/post-updates.md)
 

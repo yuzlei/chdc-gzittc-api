@@ -2,8 +2,8 @@
 
 #### 基本信息
 
-- **接口名称**：获取动态分页
-- **接口描述**：用于获取动态分页
+- **接口名称**：获取动态条件分页
+- **接口描述**：用于获取动态条件分页
 - **作者**：yvzl
 - **版本**：v1.0.0
 - **创建日期**：2024-09-18
@@ -31,7 +31,7 @@
 |  author  | string |  否   |  动态作者   |                               yvzl                               |
 |  cover   | string |  否   |  动态封面   | http://localhost:3000/images/update/66d6f82f437e991c718204e4.jpg |
 | content  | string |  否   |  动态内容   |                去聚个餐了回来接着做答辩PPT》《武汉高校MC圈，华科独占半边天》                 |
-|   sort   | string |  否   | 动态排序方向  |                            ascending                             |
+|   sort   | enum |  否   | 动态排序方向  |                            ascending                             |
 | sortName | string |  否   | 动态排序字段名 |                            createdAt                             |
 |  limit   | number |  否   |  页条目数量  |                                10                                |
 |   page   | number |  否   |   页数    |                                1                                 |
@@ -65,4 +65,4 @@
 
 - 请确保所有敏感信息在传输过程中进行加密处理
 - 本接口支持跨域请求
-- sort的枚举值为：ascending、descending
+- sort的枚举值为：ascending、descending，不排序则不传该参数

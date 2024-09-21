@@ -1,5 +1,5 @@
-import type {model} from "../types"
 import {prop, modelOptions, getModelForClass} from "@typegoose/typegoose";
+import type {model} from "../types"
 
 @modelOptions({
     schemaOptions: {
@@ -28,7 +28,7 @@ class Members {
         type: [String],
         trim: true,
     })
-    status!: Array<string>
+    status!: string
 }
 
 const Model: model = getModelForClass(Members);

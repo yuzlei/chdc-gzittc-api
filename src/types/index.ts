@@ -5,9 +5,12 @@ import type {ParameterizedContext} from "koa";
 
 type model = ReturnModelType<AnyParamConstructor<any>>
 
+type sort = 'ascending' | 'descending'
+
 type ctx = ParameterizedContext<any, IRouterParamContext, any>
 
 export {
     model,
-    ctx
+    ctx,
+    sort
 }

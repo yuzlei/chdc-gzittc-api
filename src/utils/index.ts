@@ -1,11 +1,13 @@
+import {ObjectId} from "mongodb";
 import {apiUrl, publicPath} from "../config";
 import fs from "fs"
 import Router from "koa-router"
+import type {sort} from "../types";
 import type {File} from "formidable"
 import type {model, ctx} from "../types";
 import type {RootFilterQuery} from "mongoose"
 import type {ReadStream} from "fs"
-import {ObjectId} from "mongodb";
+import type {ParsedUrlQuery} from "querystring";
 
 const getFileExtension = (str: string): string | undefined => str.match(/(\.[^\/]+)\/?/)?.[1]
 
@@ -29,15 +31,57 @@ const getFilter = (params: any, ctx: ctx): RootFilterQuery<any> => {
     return query
 }
 
+const inKey = (object: Record<string, any>, inObject: Record<string, any>, prefix: string = "", mode: "arr" | "obj" = "obj"): Record<string, any> | Array<Record<string, any>> => {
+    if(mode === "obj") {
+        let obj: Record<string, any> = {}
+        for (const key in object) {
+            if (inObject.hasOwnProperty(key)) obj[`${prefix}${key}`] = object[key]
+        }
+        return obj
+    }else {
+        let arr: Array<Record<string, any>> = []
+        for (const key in object) {
+            if (inObject.hasOwnProperty(key)) arr.push({[`${prefix}${key}`]: object[key]})
+        }
+        return arr
+    }
+}
+
 const getResources = (router: Router, path: string, model: model): void => {
     router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
         try {
-            const res = await model.find(getFilter(ctx.query, ctx))
+            const res: Array<model> = await model.find(getFilter(ctx.query, ctx))
             ctx.body = res ? res : [];
         } catch (e) {
             ctx.throw(400, '查找数据失败');
         }
     });
+}
+
+const getPage = (router: Router, path: string, model: model, modelObj: any): void => {
+    router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
+        try {
+            const query: ParsedUrlQuery & {
+                sort: sort,
+                sortName: string,
+                limit: number,
+                page: number,
+            } = ctx.query as ParsedUrlQuery & {
+                sort: sort,
+                sortName: string,
+                limit: number,
+                page: number,
+            }
+            const limit: number = query.limit || 10
+            const page: number = query.page || 1
+            const arr: Array<Array<model>> = []
+            const result: Array<model> = await model.find({$or: [...inKey(getFilter(query, ctx), new modelObj(), "", "arr") as Array<Record<string, any>>]});
+            for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
+            ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
+        } catch (e) {
+            ctx.throw(400, '查找数据失败');
+        }
+    })
 }
 
 const deleteResources = (router: Router, path: string, model: model): void => {
@@ -114,4 +158,6 @@ export {
     updateResources,
     uploadResources,
     getFilter,
+    inKey,
+    getPage
 }

@@ -28,7 +28,7 @@
 |  _id   |  string  |  否   | 成员id |                    66d6f82f437e991c718204e4                    |
 |  name  |  string  |  否   | 成员名字 |                              yvzl                              |
 |  head  |  string  |  否   | 成员头像 | http://localhost:3000/images/head/66d6f82f437e991c718204e4.jpg |
-| status | string[] |  否   | 成员身份 |                             ["站长"]                             |
+| status | string |  否   | 成员身份 |                             站长                             |
 
 #### 返回结果
 
@@ -37,7 +37,7 @@
   "_id": "66d6f82f437e991c718204e4",
   "name": "yvzl",
   "head": "http://localhost:3000/images/head/66d6f82f437e991c718204e4.jpg",
-  "status": ["站长"],
+  "status": "站长",
   "createdAt": "2024-09-03T11:51:11.592+00:00",
   "updatedAt": "2024-09-03T11:51:11.592+00:00"
 }]
