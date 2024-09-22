@@ -1,6 +1,7 @@
 import {ObjectId} from "mongodb";
 import {apiUrl, publicPath, routerPrefix} from "../config";
-import fs from "fs"
+import fs from "fs-extra"
+import path from "path"
 import Router from "koa-router"
 import type {sort} from "../types";
 import type {File} from "formidable"
@@ -26,19 +27,19 @@ const getFilter = (params: any, ctx: ctx): RootFilterQuery<any> => {
         } else {
             query[key] = value;
         }
-        if(key === "_id") query[key] = new ObjectId(value)
+        if (key === "_id") query[key] = new ObjectId(value)
     }
     return query
 }
 
 const inKey = (object: Record<string, any>, inObject: Record<string, any>, prefix: string = "", mode: "arr" | "obj" = "obj"): Record<string, any> | Array<Record<string, any>> => {
-    if(mode === "obj") {
+    if (mode === "obj") {
         let obj: Record<string, any> = {}
         for (const key in object) {
             if (inObject.hasOwnProperty(key)) obj[`${prefix}${key}`] = object[key]
         }
         return obj
-    }else {
+    } else {
         let arr: Array<Record<string, any>> = []
         for (const key in object) {
             if (inObject.hasOwnProperty(key)) arr.push({[`${prefix}${key}`]: object[key]})
@@ -87,7 +88,9 @@ const getPage = (router: Router, path: string, model: model, modelObj: any): voi
 const deleteResources = (router: Router, path: string, model: model): void => {
     router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
         try {
-            const ids: Array<ObjectId> | undefined = (ctx.query as { ids: string } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
+            const ids: Array<ObjectId> | undefined = (ctx.query as {
+                ids: string
+            } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
             if (Array.isArray(ids) && ids.length > 0) {
                 await model.deleteMany({_id: {$in: ids}});
                 ctx.status = 200;
@@ -131,14 +134,14 @@ const updateResources = (router: Router, path: string, model: model): void => {
     })
 }
 
-const uploadResources = (router: Router, path: string, saveDirectory: string): void => {
-    router.post(`${path}/upload`, async (ctx: ctx): Promise<void> => {
+const uploadResources = (router: Router, _path: string, saveDirectory: string): void => {
+    router.post(`${_path}/upload`, async (ctx: ctx): Promise<void> => {
         try {
             const file: File | undefined = ctx.request.files?.file as File | undefined;
             if (file) {
                 const reader: ReadStream = fs.createReadStream(file.filepath);
                 const name: string = `${file.newFilename}${getFileExtension(typeof file.originalFilename === "string" ? file.originalFilename : "")}`
-                reader.pipe(fs.createWriteStream(`${publicPath}/${saveDirectory}/${name}`));
+                reader.pipe(fs.createWriteStream(path.join(publicPath, saveDirectory, name)));
                 ctx.status = 200;
                 ctx.body = {imgSrc: `${apiUrl}${routerPrefix}/${saveDirectory}/${name}`}
             } else {
@@ -150,6 +153,20 @@ const uploadResources = (router: Router, path: string, saveDirectory: string): v
     })
 }
 
+const clearImages = async (model: model, field: string, _path: string): Promise<void> => {
+    try {
+        const allUserImages: Array<string> = (await model.find().distinct(field)).map((item: string) => path.basename(item));
+        const files: Array<string> = await fs.promises.readdir(_path);
+        const imagesToDelete: Array<string> = files.filter((file: string) => !allUserImages.includes(file));
+        for (const file of imagesToDelete) {
+            const filePath: string = path.join(_path, file);
+            await fs.remove(filePath);
+        }
+    } catch (e) {
+        console.error(e)
+    }
+}
+
 export {
     getResources,
     deleteResources,
@@ -158,5 +175,6 @@ export {
     uploadResources,
     getFilter,
     inKey,
-    getPage
+    getPage,
+    clearImages
 }
