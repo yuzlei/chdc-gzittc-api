@@ -84,7 +84,7 @@ router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
         })
         const result: Array<any> = await ContentModel.aggregate(pipeline)
         const arr: Array<any> = []
-        for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
+        for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
         ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
     } catch (err) {
         console.error(err)
