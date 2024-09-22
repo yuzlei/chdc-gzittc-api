@@ -9,7 +9,7 @@ export default async (): Promise<void> => {
         const _path: string = path.join(publicPath, "/images/update")
         const allCoverImages: Array<string> = (await ViewModel.find().distinct("cover")).map((item: string) => path.basename(item));
         const allContentImages: Array<string> = (await ContentModel.find().distinct("content")).flatMap((item: string): Array<string> => {
-            const matches: Array<string> | null = item.match(/<img[^>]+src="([^">]+)"/g);
+            const matches: Array<string> | null = item.match(/<img[^>]+src="([^">]+)"/g)
             if (!matches) return [];
             return (matches.map((imgTag: string): string | null => {
                 const srcMatch: RegExpMatchArray | null = imgTag.match(/src="([^"]+)"/);
