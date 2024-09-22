@@ -53,7 +53,8 @@ const getResources = (router: Router, path: string, model: model): void => {
         try {
             const res: Array<model> = await model.find(getFilter(ctx.query, ctx))
             ctx.body = res ? res : [];
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '查找数据失败');
         }
     });
@@ -79,7 +80,8 @@ const getPage = (router: Router, path: string, model: model, modelObj: any): voi
             const result: Array<model> = await model.find({$or: [...inKey(getFilter(query, ctx), new modelObj(), "", "arr") as Array<Record<string, any>>]});
             for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
             ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '查找数据失败');
         }
     })
@@ -98,7 +100,8 @@ const deleteResources = (router: Router, path: string, model: model): void => {
             } else {
                 ctx.throw(400, '请提供一个有效的id列表');
             }
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '删除数据失败');
         }
     })
@@ -110,7 +113,8 @@ const createResources = (router: Router, path: string, model: model): void => {
             await new model(ctx.request.body).save();
             ctx.status = 200;
             ctx.body = {message: '添加数据成功'};
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '添加数据失败');
         }
     })
@@ -128,7 +132,8 @@ const updateResources = (router: Router, path: string, model: model): void => {
             } else {
                 ctx.throw(400, '修改数据失败');
             }
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '修改数据失败');
         }
     })
@@ -147,7 +152,8 @@ const uploadResources = (router: Router, _path: string, saveDirectory: string): 
             } else {
                 ctx.throw(400, '文件上传失败');
             }
-        } catch (e) {
+        } catch (err) {
+            console.error(err)
             ctx.throw(400, '文件上传失败');
         }
     })
@@ -162,8 +168,8 @@ const clearImages = async (model: model, field: string, _path: string): Promise<
             const filePath: string = path.join(_path, file);
             await fs.remove(filePath);
         }
-    } catch (e) {
-        console.error(e)
+    } catch (err) {
+        console.error(err)
     }
 }
 

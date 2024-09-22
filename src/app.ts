@@ -11,7 +11,6 @@ import runCleanImages from "./tasks/cleanImages"
 
 (async (): Promise<void> => {
     await mongoose.connect(dbUrl).then(() => console.log("数据库连接成功")).catch(err => console.error(`数据库连接失败${err}`))
-
     const app: Koa = new Koa();
 
     app.use(cors({origin: '*'}))
@@ -24,7 +23,6 @@ import runCleanImages from "./tasks/cleanImages"
         await runCleanImages()
     }
     await _cleanImages()
-
     cron.schedule('0 * * * *', async (): Promise<void> => await _cleanImages());
 
     app.listen(port, (): void => console.log(`服务器在 ${port} 端口运行.`));

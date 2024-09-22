@@ -33,7 +33,8 @@ router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
         const result: Array<UpdateView> = await ViewModel.find({});
         for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
         ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '查找数据失败');
     }
 })
@@ -85,7 +86,8 @@ router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
         const arr: Array<any> = []
         for (let i = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
         ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '查找数据失败');
     }
 });
@@ -119,7 +121,8 @@ router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
         ]
         const res = await ContentModel.aggregate(pipeline)
         ctx.body = res ? res : []
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '查找数据失败');
     }
 });
@@ -137,7 +140,8 @@ router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
         } else {
             ctx.throw(400, '请提供一个有效的id列表');
         }
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '删除数据失败');
     }
 })
@@ -152,7 +156,8 @@ router.post(`${path}/create`, async (ctx: ctx): Promise<void> => {
         } else {
             ctx.throw(400, '添加数据失败');
         }
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '添加数据失败');
     }
 })
@@ -171,7 +176,8 @@ router.put(`${path}/:id`, async (ctx: ctx): Promise<void> => {
         } else {
             ctx.throw(400, '更新数据失败');
         }
-    } catch (e) {
+    } catch (err) {
+        console.error(err)
         ctx.throw(400, '更新数据失败');
     }
 })
