@@ -16,6 +16,8 @@
 
 - [上传成员头像](docs/member/upload-members.md)
 
+- [删除成员头像](docs/member/clear-members.md)
+
 #### 成就管理
 
 - [获取成就](docs/achieve/get-achieves.md)
@@ -29,6 +31,8 @@
 - [修改成就](docs/achieve/put-achieves.md)
 
 - [上传成就图标](docs/achieve/upload-achieves.md)
+
+- [删除成就图标](docs/achieve/clear-achieves.md)
 
 #### 动态管理
 
@@ -45,3 +49,5 @@
 - [修改动态](docs/update/put-updates.md)
 
 - [上传动态图片](docs/update/upload-updates.md)
+
+- [删除动态图片](docs/update/clear-updates.md)

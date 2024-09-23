@@ -18,10 +18,7 @@ export default async (): Promise<void> => {
         });
         const files: Array<string> = await fs.promises.readdir(_path);
         const imagesToDelete: Array<string> = files.filter((file: string) => ![...allCoverImages, ...allContentImages].includes(file));
-        for (const file of imagesToDelete) {
-            const filePath: string = path.join(_path, file);
-            await fs.remove(filePath);
-        }
+        for (const file of imagesToDelete) await fs.remove(path.join(_path, file));
     } catch (e) {
         console.error(e)
     }

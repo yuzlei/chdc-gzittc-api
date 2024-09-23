@@ -1,15 +1,26 @@
-import {updateResources, uploadResources, deleteResources, getResources, createResources, getPage} from "../utils";
+import {
+    updateResources,
+    uploadResources,
+    deleteResources,
+    getResources,
+    createResources,
+    getPage,
+    clearResources
+} from "../utils";
 import {Model, Achieves} from "../models/achieves";
+import {publicPath} from "../config";
+import path from "path";
 import Router from 'koa-router'
 
 const router: Router = new Router()
-const path: string = "/achieves"
+const _path: string = "/achieves"
 
-updateResources(router, path, Model)
-uploadResources(router, path, `images/achieve`)
-deleteResources(router, path, Model)
-getResources(router, path, Model)
-createResources(router, path, Model)
-getPage(router, path, Model, Achieves)
+updateResources(router, _path, Model)
+deleteResources(router, _path, Model)
+getResources(router, _path, Model)
+createResources(router, _path, Model)
+getPage(router, _path, Model, Achieves)
+uploadResources(router, _path, `/images/achieve`)
+clearResources(router, _path, path.join(publicPath, "/images/achieve"))
 
 export default router

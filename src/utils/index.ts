@@ -92,7 +92,7 @@ const deleteResources = (router: Router, path: string, model: model): void => {
         try {
             const ids: Array<ObjectId> | undefined = (ctx.query as {
                 ids: string
-            } | undefined)?.ids?.split(",")?.map(item => new ObjectId(item.trim()))
+            } | undefined)?.ids?.split(",")?.map((item: string) => new ObjectId(item.trim()))
             if (Array.isArray(ids) && ids.length > 0) {
                 await model.deleteMany({_id: {$in: ids}});
                 ctx.status = 200;
@@ -103,6 +103,27 @@ const deleteResources = (router: Router, path: string, model: model): void => {
         } catch (err) {
             console.error(err)
             ctx.throw(400, '删除数据失败');
+        }
+    })
+}
+
+const clearResources = (router: Router, url: string, _path: string): void => {
+    router.delete(`${url}/clear`, async (ctx: ctx): Promise<void> => {
+        try {
+            const images: Array<string> | undefined = (ctx.query as {
+                images: string
+            } | undefined)?.images?.split(",")?.map((item: string) => path.join(_path, item))
+            console.log(images)
+            if (Array.isArray(images) && images.length > 0) {
+                for (const file of images) await fs.remove(file);
+                ctx.status = 200;
+                ctx.body = {message: '文件清除成功'};
+            } else {
+                ctx.throw(400, '请提供一个有效的文件名字列表');
+            }
+        } catch (err) {
+            console.error(err)
+            ctx.throw(400, '文件清除失败');
         }
     })
 }
@@ -148,7 +169,7 @@ const uploadResources = (router: Router, _path: string, saveDirectory: string): 
                 const name: string = `${file.newFilename}${getFileExtension(typeof file.originalFilename === "string" ? file.originalFilename : "")}`
                 reader.pipe(fs.createWriteStream(path.join(publicPath, saveDirectory, name)));
                 ctx.status = 200;
-                ctx.body = {imgSrc: `${apiUrl}${routerPrefix}/${saveDirectory}/${name}`}
+                ctx.body = {imgSrc: `${apiUrl}${routerPrefix}${saveDirectory}/${name}`}
             } else {
                 ctx.throw(400, '文件上传失败');
             }
@@ -164,10 +185,7 @@ const clearImages = async (model: model, field: string, _path: string): Promise<
         const allUserImages: Array<string> = (await model.find().distinct(field)).map((item: string) => path.basename(item));
         const files: Array<string> = await fs.promises.readdir(_path);
         const imagesToDelete: Array<string> = files.filter((file: string) => !allUserImages.includes(file));
-        for (const file of imagesToDelete) {
-            const filePath: string = path.join(_path, file);
-            await fs.remove(filePath);
-        }
+        for (const file of imagesToDelete) await fs.remove(path.join(_path, file));
     } catch (err) {
         console.error(err)
     }
@@ -176,6 +194,7 @@ const clearImages = async (model: model, field: string, _path: string): Promise<
 export {
     getResources,
     deleteResources,
+    clearResources,
     createResources,
     updateResources,
     uploadResources,

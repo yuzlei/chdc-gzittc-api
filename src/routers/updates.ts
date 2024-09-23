@@ -1,16 +1,19 @@
-import Router from 'koa-router'
 import {ObjectId} from "mongodb";
-import {uploadResources, getFilter, inKey} from "../utils";
+import {publicPath} from "../config";
+import {uploadResources, getFilter, inKey, clearResources} from "../utils";
 import {Model as ViewModel, UpdateView} from "../models/update-view";
 import {Model as ContentModel, UpdateContent} from "../models/update-content";
+import path from "path";
+import Router from 'koa-router'
 import type {ctx, sort} from "../types"
 import type {ParsedUrlQuery} from 'querystring'
 import type {PipelineStage} from "mongoose"
 
 const router: Router = new Router()
-const path: string = "/updates"
+const _path: string = "/updates"
 
-uploadResources(router, path, `images/update`)
+uploadResources(router, _path, `images/update`)
+clearResources(router, _path, path.join(publicPath, "/images/update"))
 
 const FillingAnObject = (object: Record<string, any>, prefix: string | null = null) => {
     let obj: Record<string, any> = {}
@@ -18,7 +21,7 @@ const FillingAnObject = (object: Record<string, any>, prefix: string | null = nu
     return obj
 }
 
-router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
+router.get(`${_path}/pages`, async (ctx: ctx): Promise<void> => {
     try {
         const query: ParsedUrlQuery & {
             limit: number,
@@ -39,7 +42,7 @@ router.get(`${path}/pages`, async (ctx: ctx): Promise<void> => {
     }
 })
 
-router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
+router.get(`${_path}/pages_condition`, async (ctx: ctx): Promise<void> => {
     try {
         const query: ParsedUrlQuery & {
             sort: sort,
@@ -92,7 +95,7 @@ router.get(`${path}/pages_condition`, async (ctx: ctx): Promise<void> => {
     }
 });
 
-router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
+router.get(`${_path}/search`, async (ctx: ctx): Promise<void> => {
     try {
         const query: ParsedUrlQuery = ctx.query as ParsedUrlQuery
         const as: string = 'update_views'
@@ -127,7 +130,7 @@ router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
     }
 });
 
-router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
+router.delete(`${_path}/delete`, async (ctx: ctx): Promise<void> => {
     try {
         const ids: Array<ObjectId> | undefined = (ctx.query as {
             ids: string
@@ -146,7 +149,7 @@ router.delete(`${path}/delete`, async (ctx: ctx): Promise<void> => {
     }
 })
 
-router.post(`${path}/create`, async (ctx: ctx): Promise<void> => {
+router.post(`${_path}/create`, async (ctx: ctx): Promise<void> => {
     try {
         const data = ctx.request.body
         if (data) {
@@ -162,7 +165,7 @@ router.post(`${path}/create`, async (ctx: ctx): Promise<void> => {
     }
 })
 
-router.put(`${path}/:id`, async (ctx: ctx): Promise<void> => {
+router.put(`${_path}/:id`, async (ctx: ctx): Promise<void> => {
     try {
         const id: string = ctx.params.id
         const data: UpdateView & UpdateContent = ctx.request.body
