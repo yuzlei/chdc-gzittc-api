@@ -52,7 +52,7 @@ const getResources = (router: Router, path: string, model: model): void => {
     router.get(`${path}/search`, async (ctx: ctx): Promise<void> => {
         try {
             const res: Array<model> = await model.find(getFilter(ctx.query, ctx))
-            ctx.body = res ? res : [];
+            ctx.body = res || [];
         } catch (err) {
             console.error(err)
             ctx.throw(400, '查找数据失败');
@@ -79,7 +79,7 @@ const getPage = (router: Router, path: string, model: model, modelObj: any): voi
             const arr: Array<Array<model>> = []
             const result: Array<model> = await model.find({$or: [...inKey(getFilter(query, ctx), new modelObj(), "", "arr") as Array<Record<string, any>>]});
             for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
-            ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
+            ctx.body = {data: arr[page - 1] || [], pageTotal: arr.length}
         } catch (err) {
             console.error(err)
             ctx.throw(400, '查找数据失败');
@@ -113,7 +113,6 @@ const clearResources = (router: Router, url: string, _path: string): void => {
             const images: Array<string> | undefined = (ctx.query as {
                 images: string
             } | undefined)?.images?.split(",")?.map((item: string) => path.join(_path, item))
-            console.log(images)
             if (Array.isArray(images) && images.length > 0) {
                 for (const file of images) await fs.remove(file);
                 ctx.status = 200;

@@ -35,7 +35,7 @@ router.get(`${_path}/pages`, async (ctx: ctx): Promise<void> => {
         const arr: Array<Array<UpdateView>> = []
         const result: Array<UpdateView> = await ViewModel.find({});
         for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
-        ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
+        ctx.body = {data: arr[page - 1] || [], pageTotal: arr.length}
     } catch (err) {
         console.error(err)
         ctx.throw(400, '查找数据失败');
@@ -88,7 +88,7 @@ router.get(`${_path}/pages_condition`, async (ctx: ctx): Promise<void> => {
         const result: Array<any> = await ContentModel.aggregate(pipeline)
         const arr: Array<any> = []
         for (let i: number = 0; i < result.length; i += limit) arr.push(result.slice(i, i + limit))
-        ctx.body = {data: arr[page - 1] ? arr[page - 1] : [], pageTotal: arr.length}
+        ctx.body = {data: arr[page - 1] || [], pageTotal: arr.length}
     } catch (err) {
         console.error(err)
         ctx.throw(400, '查找数据失败');
@@ -122,8 +122,8 @@ router.get(`${_path}/search`, async (ctx: ctx): Promise<void> => {
                 }
             }
         ]
-        const res = await ContentModel.aggregate(pipeline)
-        ctx.body = res ? res : []
+        const res: Array<UpdateView & UpdateContent> = await ContentModel.aggregate(pipeline)
+        ctx.body = res || []
     } catch (err) {
         console.error(err)
         ctx.throw(400, '查找数据失败');
