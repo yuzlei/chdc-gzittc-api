@@ -12,7 +12,7 @@ import type {PipelineStage} from "mongoose"
 const router: Router = new Router()
 const _path: string = "/updates"
 
-uploadResources(router, _path, `images/update`)
+uploadResources(router, _path, `/images/update`)
 clearResources(router, _path, path.join(publicPath, "/images/update"))
 
 const FillingAnObject = (object: Record<string, any>, prefix: string | null = null) => {
