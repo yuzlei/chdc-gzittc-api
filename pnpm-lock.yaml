@@ -13,7 +13,7 @@ importers:
         version: 5.0.0
       '@typegoose/typegoose':
         specifier: ^12.7.0
-        version: 12.7.0(mongoose@8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))
+        version: 12.7.0(mongoose@8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))
       '@types/formidable':
         specifier: ^3.4.5
         version: 3.4.5
@@ -72,8 +72,8 @@ importers:
         specifier: ^6.8.0
         version: 6.8.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
       mongoose:
-        specifier: ^8.6.0
-        version: 8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
+        specifier: ^8.6.3
+        version: 8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
       node-cron:
         specifier: ^3.0.3
         version: 3.0.3
@@ -85,7 +85,7 @@ importers:
         version: 10.9.2(@types/node@22.5.2)(typescript@5.5.4)
       typegoose:
         specifier: ^5.9.1
-        version: 5.9.1(mongoose@8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))
+        version: 5.9.1(mongoose@8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
@@ -912,8 +912,8 @@ packages:
       socks:
         optional: true
 
-  mongoose@8.6.0:
-    resolution: {integrity: sha512-p6VSbYKvD4ZIabqo8C0kS5eKX1Xpji+opTAIJ9wyuPJ8Y/FblgXSMnFRXnB40bYZLKPQT089K5KU8+bqIXtFdw==}
+  mongoose@8.6.3:
+    resolution: {integrity: sha512-++yRmm7hjMbqVA/8WeiygTnEfrFbiy+OBjQi49GFJIvCQuSYE56myyQWo4j5hbpcHjhHQU8NukMNGTwAWFWjIw==}
     engines: {node: '>=16.20.1'}
 
   mpath@0.9.0:
@@ -1952,11 +1952,11 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
-  '@typegoose/typegoose@12.7.0(mongoose@8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))':
+  '@typegoose/typegoose@12.7.0(mongoose@8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3))':
     dependencies:
       lodash: 4.17.21
       loglevel: 1.9.1
-      mongoose: 8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
+      mongoose: 8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
       reflect-metadata: 0.2.2
       semver: 7.6.3
       tslib: 2.7.0
@@ -2077,7 +2077,7 @@ snapshots:
 
   '@types/mongoose@5.11.97(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)':
     dependencies:
-      mongoose: 8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
+      mongoose: 8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
     transitivePeerDependencies:
       - '@aws-sdk/credential-providers'
       - '@mongodb-js/zstd'
@@ -2514,7 +2514,7 @@ snapshots:
       '@aws-sdk/credential-providers': 3.650.0
       socks: 2.8.3
 
-  mongoose@8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3):
+  mongoose@8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3):
     dependencies:
       bson: 6.8.0
       kareem: 2.6.3
@@ -2712,9 +2712,9 @@ snapshots:
       media-typer: 0.3.0
       mime-types: 2.1.35
 
-  typegoose@5.9.1(mongoose@8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)):
+  typegoose@5.9.1(mongoose@8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)):
     dependencies:
-      mongoose: 8.6.0(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
+      mongoose: 8.6.3(@aws-sdk/credential-providers@3.650.0)(socks@2.8.3)
       reflect-metadata: 0.1.14
 
   typescript@5.5.4: {}
